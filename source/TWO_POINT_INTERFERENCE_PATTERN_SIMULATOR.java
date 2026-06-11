@@ -16,16 +16,10 @@ import java.io.IOException;
 public class TWO_POINT_INTERFERENCE_PATTERN_SIMULATOR extends PApplet {
 
 // TWO POINT INTERFERENCE PATTERN SIMULATOR
-// TAEHYUN IM (BOYD)
+// TAEHYUN IM
 // 2025.06.12
 
-
-
-// ----- TITLE SCREEN VARIABLES -----
-// Controls whether the title screen is shown
 boolean showTitleScreen = true;
-
-// ASCII art title displayed on the title screen, each line centered manually
 
 String[] asciiTitle = {
   "     +-+-+-+ +-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+     ",
@@ -39,87 +33,60 @@ String[] asciiTitle = {
   "                     >>>  PRESS ENTER TO START  <<<                      "
 };
 
-// ----- SIMULATION VARIABLES -----
-// Wavelength of the waves (in pixels)
 float wavelength = 25;
-
-// Frequency of the waves (in Hz)
 float frequency = 1.5f;
-
-// Speed of wave propagation, calculated as wavelength * frequency
 float waveSpeed = 50;
-
-// Distance between the two wave sources (in pixels)
 float sourceDistance = 200;
 
-// Pause control variables
-boolean paused = false;       // Whether simulation is paused
-boolean showCircle = true;    // Show expanding wave circles or not
-boolean showDot = true;       // Show nodal interference points or not
+boolean paused = false;
+boolean showCircle = true;
+boolean showDot = true;
 
-// Positions of the two wave sources
 PVector source1, source2;
 
-// Timing variables to handle animation timing and pause functionality
-float startTime;             // Time when simulation started (seconds)
-float currentTime = 0;       // Time elapsed in simulation (seconds)
-float pausedStartTime = 0;   // Time when pause started (seconds)
-float totalPausedTime = 0;   // Accumulated paused duration (seconds)
+float startTime;
+float currentTime = 0;
+float pausedStartTime = 0;
+float totalPausedTime = 0;
 
 public void setup() {
-  /* size commented out by preprocessor */;      // Canvas size
-  /* smooth commented out by preprocessor */;             // Enable anti-aliasing for nicer drawing
-  frameRate(60);        // Target 60 frames per second
-  ellipseMode(CENTER);  // Draw ellipses from center point
-  textAlign(CENTER, CENTER);  // Center text horizontally and vertically
-  textSize(14);         // Text size for labels and title
-  fill(0, 255, 255);    // Cyan color for text and dots
+  ellipseMode(CENTER);
+  textAlign(CENTER, CENTER);
+  textSize(14);
+  fill(0, 255, 255);
   noStroke();
-
-  // Initialize source positions based on initial distance
   source1 = new PVector(width / 2 - sourceDistance / 2, height / 2);
   source2 = new PVector(width / 2 + sourceDistance / 2, height / 2);
-  
-  // Record the start time in seconds
   startTime = millis() / 1000.0f;
 }
 
 public void draw() {
   if (showTitleScreen) {
-    // Draw the title screen and skip simulation draw
     drawTitleScreen();
     return;
   }
 
-  background(0);  // Black background
+  background(0);
 
-  // Update elapsed simulation time only if not paused
   if (!paused) {
     currentTime = millis() / 1000.0f - startTime - totalPausedTime;
   }
 
-  // Wave speed is wavelength * frequency (pixels per second)
   waveSpeed = wavelength * frequency;
-
-  // Update sources in case sourceDistance has changed
   source1.x = width / 2 - sourceDistance / 2;
   source2.x = width / 2 + sourceDistance / 2;
 
-  // Draw the wave circles expanding from each source
   if (showCircle) {
     drawWaveCircles(source1, currentTime);
     drawWaveCircles(source2, currentTime);
   }
 
-  // Draw nodal points of interference if enabled
   if (showDot) {
-    drawNodalDots(source1, source2, currentTime);
+    drawNodalLines(source1, source2, currentTime);
   }
 
-  // Draw control labels on screen
   drawLabels();
 
-  // Draw the sources as red filled circles
   fill(255, 0, 0);
   stroke(255, 0, 0);
   strokeWeight(4);
@@ -127,8 +94,7 @@ public void draw() {
   ellipse(source2.x, source2.y, 10, 10);
 }
 
-// Draw the ASCII title screen
-public void drawTitleScreen() {
+void drawTitleScreen() {
   background(0);
   fill(0, 255, 255);
   for (int i = 0; i < asciiTitle.length; i++) {
@@ -136,80 +102,58 @@ public void drawTitleScreen() {
   }
 }
 
-// Draw expanding wave circles for a given source and current time
-public void drawWaveCircles(PVector source, float currentTime) {
+void drawWaveCircles(PVector source, float t) {
   noFill();
   strokeWeight(1.2f);
-  stroke(255, 255, 255, 150); // White circles with transparency
-
-  float maxRadius = currentTime * waveSpeed;
-
-  // Start drawing circles from a radius that makes the animation smooth
+  stroke(255, 255, 255, 150);
+  float maxRadius = t * waveSpeed;
   float startRadius = maxRadius % wavelength;
-
   for (float r = startRadius; r < maxRadius; r += wavelength) {
     ellipse(source.x, source.y, r * 2, r * 2);
   }
 }
 
-// Draw the nodal points where destructive interference occurs
-public void drawNodalDots(PVector s1, PVector s2, float currentTime) {
-  float maxRadius = currentTime * waveSpeed;
-  float step = wavelength / 20.0f;  // Dot placement resolution
+void drawNodalLines(PVector s1, PVector s2, float t) {
+  float maxRadius = t * waveSpeed;
+  float cx = (s1.x + s2.x) / 2.0f;
+  float cy = (s1.y + s2.y) / 2.0f;
+  float c = dist(s1.x, s1.y, s2.x, s2.y) / 2.0f;
 
-  fill(0, 255, 255); // Cyan dots
-  noStroke();
+  stroke(0, 255, 255);
+  strokeWeight(1.5f);
+  noFill();
 
-  // Loop over different path difference multiples where nodal lines occur
   for (int m = 0; (m + 0.5f) * wavelength < maxRadius; m++) {
     float pathDiff = (m + 0.5f) * wavelength;
+    float a = pathDiff / 2.0f;
+    if (a >= c) continue;
+    float b2 = c * c - a * a;
 
-    // For each circle radius of source1, check for intersection with corresponding circle on source2
-    for (float r1 = 0; r1 <= maxRadius; r1 += step) {
-      float r2 = r1 - pathDiff;
-      if (r2 < 0 || r2 > maxRadius) continue;
-
-      ArrayList<PVector> intersections = circleCircleIntersection(s1, r1, s2, r2);
-      for (PVector p : intersections) {
-        ellipse(p.x, p.y, 4, 4);  // Draw dot at intersection
-        float mirrorX = width - p.x;
-        ellipse(mirrorX, p.y, 4, 4); // Symmetric dot on other side (for visual effect)
+    for (int branch = -1; branch <= 1; branch += 2) {
+      boolean shapeOpen = false;
+      for (int py = 0; py <= height; py++) {
+        float yRel = py - cy;
+        float xRel = branch * a * sqrt(1.0f + (yRel * yRel) / b2);
+        float px = cx + xRel;
+        float d1 = dist(px, (float)py, s1.x, s1.y);
+        float d2 = dist(px, (float)py, s2.x, s2.y);
+        boolean inBounds = d1 <= maxRadius && d2 <= maxRadius && px >= 0 && px <= width;
+        if (inBounds) {
+          if (!shapeOpen) { beginShape(); shapeOpen = true; }
+          vertex(px, py);
+        } else {
+          if (shapeOpen) { endShape(); shapeOpen = false; }
+        }
       }
+      if (shapeOpen) endShape();
     }
   }
 }
 
-// Calculate intersection points of two circles given centers and radii
-public ArrayList<PVector> circleCircleIntersection(PVector c1, float r1, PVector c2, float r2) {
-  ArrayList<PVector> points = new ArrayList<PVector>();
-
-  float dx = c2.x - c1.x;
-  float dy = c2.y - c1.y;
-  float d = dist(c1.x, c1.y, c2.x, c2.y);
-
-  // No intersections if circles are too far apart or one is contained inside the other
-  if (d > r1 + r2 || d < abs(r1 - r2) || d == 0) return points;
-
-  float a = (r1 * r1 - r2 * r2 + d * d) / (2 * d);
-  float h = sqrt(r1 * r1 - a * a);
-
-  float x2 = c1.x + a * dx / d;
-  float y2 = c1.y + a * dy / d;
-
-  float rx = -dy * h / d;
-  float ry = dx * h / d;
-
-  points.add(new PVector(x2 + rx, y2 + ry));
-  points.add(new PVector(x2 - rx, y2 - ry));
-  return points;
-}
-
-// Draw control instructions and current parameter values
-public void drawLabels() {
-  fill(0, 0, 0, 150); // Semi-transparent black background for text
+void drawLabels() {
+  fill(0, 0, 0, 150);
   noStroke();
   rect(5, 5, 200, 133);
-
   fill(0, 255, 255);
   textAlign(LEFT, CENTER);
   textSize(14);
@@ -217,14 +161,12 @@ public void drawLabels() {
   text("Frequency (W/S): " + nf(frequency, 0, 1), 10, 45);
   text("Source Distance (E/D): " + nf(sourceDistance, 0, 1), 10, 65);
   text("Pause (SPACEBAR)", 10, 85);
-  text("Toggle dots (r)", 10, 105);
+  text("Toggle lines (r)", 10, 105);
   text("Toggle waves (f)", 10, 125);
 }
 
-// Handle keyboard input for controls
 public void keyPressed() {
   if (showTitleScreen && (key == ENTER || key == RETURN)) {
-    // Start simulation when enter pressed on title screen
     showTitleScreen = false;
     startTime = millis() / 1000.0f;
     totalPausedTime = 0;
@@ -232,48 +174,32 @@ public void keyPressed() {
     return;
   }
 
-  // Adjust wavelength with Q/A keys
   if (key == 'q') wavelength += 1;
   if (key == 'a') wavelength -= 1;
   wavelength = constrain(wavelength, 5, 100);
 
-  // Adjust frequency with W/S keys
   if (key == 'w') frequency += 0.1f;
   if (key == 's') frequency -= 0.1f;
   frequency = constrain(frequency, 0.1f, 5);
 
-  // Adjust source distance with E/D keys
   if (key == 'e') sourceDistance += 5;
   if (key == 'd') sourceDistance -= 5;
   sourceDistance = constrain(sourceDistance, 10, 1000);
 
-  // Toggle nodal dots visibility with R
-  if (key == 'r') {
-    showDot = !showDot;
-  }
+  if (key == 'r') showDot = !showDot;
+  if (key == 'f') showCircle = !showCircle;
 
-  // Toggle wave circles visibility with F
-  if (key == 'f') {
-    showCircle = !showCircle;
-  }
-
-  // Pause / Resume simulation with spacebar
   if (key == ' ') {
     paused = !paused;
     if (paused) {
-      // Record when pause started to adjust total paused duration
       pausedStartTime = millis() / 1000.0f;
     } else {
-      // Update total paused time when resuming
-      float pausedDuration = millis() / 1000.0f - pausedStartTime;
-      totalPausedTime += pausedDuration;
+      totalPausedTime += millis() / 1000.0f - pausedStartTime;
     }
   }
 }
 
-
-  public void settings() { size(1000, 600);
-smooth(); }
+  public void settings() { size(1000, 600); smooth(); }
 
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "TWO_POINT_INTERFERENCE_PATTERN_SIMULATOR" };

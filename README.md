@@ -25,7 +25,13 @@ This simulator renders the classic two-point wave interference pattern by animat
 ### Option 1 — Browser (no install)
 **[▶ Open the live demo](https://taehyunnnnn.github.io/twoPointInterferencePatternSimulator.processing/)**
 
-### Option 2 — Run locally with Processing
+### Option 2 — Runnable JAR (requires Java 17+)
+**[⬇ Download JAR](https://github.com/taehyunnnnn/twoPointInterferencePatternSimulator.processing/releases/latest)**
+```bash
+java -jar TWO_POINT_INTERFERENCE_PATTERN_SIMULATOR.jar
+```
+
+### Option 3 — Run locally with Processing
 #### Prerequisites
 - Processing 4+
 
