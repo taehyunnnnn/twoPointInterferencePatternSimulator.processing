@@ -1,5 +1,5 @@
 // TWO POINT INTERFERENCE PATTERN SIMULATOR
-// TAEHYUN IM (BOYD)
+// TAEHYUN IM
 // 2025.06.12
 
 
@@ -94,9 +94,9 @@ void draw() {
     drawWaveCircles(source2, currentTime);
   }
 
-  // Draw nodal points of interference if enabled
+  // Draw nodal lines of interference if enabled
   if (showDot) {
-    drawNodalDots(source1, source2, currentTime);
+    drawNodalLines(source1, source2, currentTime);
   }
 
   // Draw control labels on screen
@@ -135,56 +135,45 @@ void drawWaveCircles(PVector source, float currentTime) {
   }
 }
 
-// Draw the nodal points where destructive interference occurs
-void drawNodalDots(PVector s1, PVector s2, float currentTime) {
+// Draw nodal lines (hyperbolas) where destructive interference occurs
+void drawNodalLines(PVector s1, PVector s2, float currentTime) {
   float maxRadius = currentTime * waveSpeed;
-  float step = wavelength / 20.0;  // Dot placement resolution
+  float cx = (s1.x + s2.x) / 2.0;
+  float cy = (s1.y + s2.y) / 2.0;
+  float c = dist(s1.x, s1.y, s2.x, s2.y) / 2.0;
 
-  fill(0, 255, 255); // Cyan dots
-  noStroke();
+  stroke(0, 255, 255);
+  strokeWeight(1.5);
+  noFill();
 
-  // Loop over different path difference multiples where nodal lines occur
   for (int m = 0; (m + 0.5) * wavelength < maxRadius; m++) {
-    float pathDiff = (m + 0.5f) * wavelength;
+    float pathDiff = (m + 0.5) * wavelength;
+    float a = pathDiff / 2.0;
+    if (a >= c) continue;
+    float b2 = c * c - a * a;
 
-    // For each circle radius of source1, check for intersection with corresponding circle on source2
-    for (float r1 = 0; r1 <= maxRadius; r1 += step) {
-      float r2 = r1 - pathDiff;
-      if (r2 < 0 || r2 > maxRadius) continue;
+    // Draw both branches of the hyperbola (left and right of centre)
+    for (int branch = -1; branch <= 1; branch += 2) {
+      boolean shapeOpen = false;
+      for (int py = 0; py <= height; py++) {
+        float yRel = py - cy;
+        float xRel = branch * a * sqrt(1.0 + (yRel * yRel) / b2);
+        float px = cx + xRel;
 
-      ArrayList<PVector> intersections = circleCircleIntersection(s1, r1, s2, r2);
-      for (PVector p : intersections) {
-        ellipse(p.x, p.y, 4, 4);  // Draw dot at intersection
-        float mirrorX = width - p.x;
-        ellipse(mirrorX, p.y, 4, 4); // Symmetric dot on other side (for visual effect)
+        float d1 = dist(px, (float)py, s1.x, s1.y);
+        float d2 = dist(px, (float)py, s2.x, s2.y);
+        boolean inBounds = d1 <= maxRadius && d2 <= maxRadius && px >= 0 && px <= width;
+
+        if (inBounds) {
+          if (!shapeOpen) { beginShape(); shapeOpen = true; }
+          vertex(px, py);
+        } else {
+          if (shapeOpen) { endShape(); shapeOpen = false; }
+        }
       }
+      if (shapeOpen) endShape();
     }
   }
-}
-
-// Calculate intersection points of two circles given centers and radii
-ArrayList<PVector> circleCircleIntersection(PVector c1, float r1, PVector c2, float r2) {
-  ArrayList<PVector> points = new ArrayList<PVector>();
-
-  float dx = c2.x - c1.x;
-  float dy = c2.y - c1.y;
-  float d = dist(c1.x, c1.y, c2.x, c2.y);
-
-  // No intersections if circles are too far apart or one is contained inside the other
-  if (d > r1 + r2 || d < abs(r1 - r2) || d == 0) return points;
-
-  float a = (r1 * r1 - r2 * r2 + d * d) / (2 * d);
-  float h = sqrt(r1 * r1 - a * a);
-
-  float x2 = c1.x + a * dx / d;
-  float y2 = c1.y + a * dy / d;
-
-  float rx = -dy * h / d;
-  float ry = dx * h / d;
-
-  points.add(new PVector(x2 + rx, y2 + ry));
-  points.add(new PVector(x2 - rx, y2 - ry));
-  return points;
 }
 
 // Draw control instructions and current parameter values
@@ -200,7 +189,7 @@ void drawLabels() {
   text("Frequency (W/S): " + nf(frequency, 0, 1), 10, 45);
   text("Source Distance (E/D): " + nf(sourceDistance, 0, 1), 10, 65);
   text("Pause (SPACEBAR)", 10, 85);
-  text("Toggle dots (r)", 10, 105);
+  text("Toggle lines (r)", 10, 105);
   text("Toggle waves (f)", 10, 125);
 }
 
