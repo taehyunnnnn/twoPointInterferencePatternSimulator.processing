@@ -1,66 +1,70 @@
 # Two-Point Interference Pattern Simulator
+An interactive physics visualization where expanding wavefronts from two coherent sources form mathematically exact hyperbolic nodal lines in real-time.
 
-An interactive **physics visualization** that simulates **two-point wave interference** using expanding wavefronts and nodal (destructive interference) points.
-
-Built using **Processing (Java)**.
+![demo](assets/demo.gif)
 
 ---
 
 ## Overview
-
-This project demonstrates how waves emitted from **two sources** interfere with each other over time.
-
-The simulation allows users to:
-- Visualize expanding wavefronts
-- Observe interference patterns
-- See nodal points where destructive interference occurs
-- Adjust parameters in real time
-
-Designed to be **educational, visual, and interactive**.
+This simulator renders the classic two-point wave interference pattern by animating expanding circular wavefronts and computing destructive interference lines as true hyperbolas — the locus of points where path difference equals a half-wavelength multiple. Built in Processing to make abstract wave optics tangible and visually satisfying. Wavelength, frequency, and source separation are all adjustable live so you can watch the pattern reshape instantly.
 
 ---
 
-## Concepts
+## Features
+- Animated expanding wavefronts from two coherent point sources
+- Real-time hyperbolic nodal (destructive interference) lines with no gaps
+- Live parameter tuning: wavelength, frequency, and source distance
+- Pause/resume and independent toggles for waves and nodal lines
 
-- Wave propagation  
-- Constructive & destructive interference  
-- Path difference and nodal lines  
-- Real-time animation and geometry  
+---
+
+## Getting Started
+
+### Prerequisites
+- Processing 4+
+
+### Run
+```bash
+# clone the repo
+git clone https://github.com/taehyunnnnn/twoPointInterferencePatternSimulator.processing
+cd twoPointInterferencePatternSimulator.processing
+
+# open and run
+make run
+```
+
+`make run` opens the sketch in Processing IDE. Click **▶**, then press **Enter** on the title screen.
+If `processing-java` is on your PATH, it runs headlessly instead.
 
 ---
 
 ## Controls
-
-| Key | Action |
-|----|------|
-| **Enter** | Start simulation |
-| **Q / A** | Increase / decrease wavelength |
-| **W / S** | Increase / decrease frequency |
-| **E / D** | Increase / decrease source distance |
-| **R** | Toggle nodal points |
-| **F** | Toggle wave circles |
-| **Space** | Pause / resume |
-
----
-
-## Tech Stack
-
-- **Language**: Java (Processing)
-- **Tools**: Processing IDE
-- **Focus**: Graphics, simulation, physics visualization
+| Input | Action |
+|---|---|
+| Enter | Start simulation |
+| Q / A | Increase / decrease wavelength |
+| W / S | Increase / decrease frequency |
+| E / D | Increase / decrease source distance |
+| R | Toggle nodal lines |
+| F | Toggle wave circles |
+| Space | Pause / resume |
 
 ---
 
-## How to Run
-
-1. Install **Processing**
-2. Open the `.pde` file
-3. Click **Run**
-4. Press **Enter** to start the simulation
+## What I Learned
+- Modeling wave propagation and interference mathematically using path difference
+- Deriving and rendering hyperbolic nodal lines as exact curves instead of sampled dots
+- Using `beginShape()` / `vertex()` / `endShape()` in Processing for smooth continuous curves
+- Managing real-time animation timing with accurate pause/resume state tracking
 
 ---
 
 ## Author
+**Taehyun Im**
+[GitHub](https://github.com/taehyunnnnn) · [Portfolio](https://taehyun.pages.dev) · [LinkedIn](https://linkedin.com/in/taehyunim)
 
-**Taehyun Im**  
-Created: **2025-06-12**
+---
+
+## Acknowledgments
+- Two-point interference theory from standard wave optics curriculum
+- [Processing Foundation](https://processing.org) for the creative coding environment
