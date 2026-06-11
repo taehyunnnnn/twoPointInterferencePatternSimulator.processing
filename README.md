@@ -1,6 +1,8 @@
 # Two-Point Interference Pattern Simulator
 An interactive physics visualization where expanding wavefronts from two coherent sources form mathematically exact hyperbolic nodal lines in real-time.
 
+**[▶ Try it in your browser](https://taehyunnnnn.github.io/twoPointInterferencePatternSimulator.processing/)**
+
 ![demo](assets/demo.gif)
 
 ---
@@ -20,10 +22,14 @@ This simulator renders the classic two-point wave interference pattern by animat
 
 ## Getting Started
 
-### Prerequisites
+### Option 1 — Browser (no install)
+**[▶ Open the live demo](https://taehyunnnnn.github.io/twoPointInterferencePatternSimulator.processing/)**
+
+### Option 2 — Run locally with Processing
+#### Prerequisites
 - Processing 4+
 
-### Run
+#### Run
 ```bash
 # clone the repo
 git clone https://github.com/taehyunnnnn/twoPointInterferencePatternSimulator.processing
@@ -34,7 +40,6 @@ make run
 ```
 
 `make run` opens the sketch in Processing IDE. Click **▶**, then press **Enter** on the title screen.
-If `processing-java` is on your PATH, it runs headlessly instead.
 
 ---
 
@@ -68,3 +73,4 @@ If `processing-java` is on your PATH, it runs headlessly instead.
 ## Acknowledgments
 - Two-point interference theory from standard wave optics curriculum
 - [Processing Foundation](https://processing.org) for the creative coding environment
+- [p5.js](https://p5js.org) for the browser port
