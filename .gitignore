@@ -2,6 +2,15 @@
 lib/
 source/
 
+# Build output
+build/
+*.jar
+
+# Processing exported app folders
+macos-aarch64/
+macos-x86_64/
+windows-amd64/
+
 # macOS
 .DS_Store
 
